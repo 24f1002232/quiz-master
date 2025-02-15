@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %} Home Page {% endblock %}
+
+{% block content %}
+{% if session.get('user_email') %}
+{% if session.get('role') == "admin" %}
+{% include 'admin_dash.html' %}
+{% else %}
+{% include 'user_dash.html' %}
+{% endif %}
+{% else %}
+
+{% endif %}
+<h1>Home Page</h1>
+<p>Welcome to the home page!</p>
+{% endblock %}
