@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %} Quiz Analysis {% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>Analysis for: {{ quiz.name if quiz else 'Quiz' }}</h2>
+
+  {% if chart_data %}
+  <div class="mb-3">
+    <img src="{{ chart_data }}" alt="Chart" class="img-fluid" />
+  </div>
+  <div class="mb-3">
+    <h5>Stats</h5>
+    <ul>
+      <li>Total attempts: {{ stats.count }}</li>
+      <li>Mean: {{ stats.mean }}</li>
+      <li>Median: {{ stats.median }}</li>
+      <li>Min: {{ stats.min }}</li>
+      <li>Max: {{ stats.max }}</li>
+    </ul>
+  </div>
+  <div>
+    <h5>Attempts</h5>
+    <table class="table table-sm table-striped">
+      <thead>
+        <tr><th>User</th><th>Score</th><th>Time</th></tr>
+      </thead>
+      <tbody>
+        {% for a in attempts %}
+        <tr>
+          <td>{{ a.user }}</td>
+          <td>{{ a.score }}</td>
+          <td>{{ a.time }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="alert alert-info">No attempts yet for this quiz.</div>
+  {% endif %}
+
+</div>
+{% endblock %}

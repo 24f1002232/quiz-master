@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %} Admin Dashboard {% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>Admin Dashboard</h2>
+  <ul>
+    <li><a href="{{ url_for('manage_users') }}">Manage Users</a></li>
+    <li><a href="{{ url_for('manage_subject') }}">Manage Subjects</a></li>
+  </ul>
+  <p>To view analysis for a quiz, go to <code>/quiz/&lt;quiz_id&gt;/analysis</code> (replace &lt;quiz_id&gt; with the numeric ID).</p>
+</div>
+{% endblock %}

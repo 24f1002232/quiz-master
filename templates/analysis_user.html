@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %} My Analysis {% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>My Performance</h2>
+
+  {% if chart_data %}
+  <div class="mb-3">
+    <img src="{{ chart_data }}" alt="Chart" class="img-fluid" />
+  </div>
+  <div>
+    <h5>Attempts</h5>
+    <table class="table table-sm table-striped">
+      <thead>
+        <tr><th>Quiz</th><th>Score</th><th>Time</th></tr>
+      </thead>
+      <tbody>
+        {% for a in attempts %}
+        <tr>
+          <td>{{ a.quiz }}</td>
+          <td>{{ a.score }}</td>
+          <td>{{ a.time }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="alert alert-info">You have no attempts yet.</div>
+  {% endif %}
+
+</div>
+{% endblock %}
