@@ -9,6 +9,7 @@ import matplotlib
 # Use non-interactive backend for server-side PNG generation
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 @app.route('/')
@@ -16,7 +17,7 @@ def home():
     return render_template('home.html')
 
 
-@app.route('/login', methods = ['GET','POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
         return render_template('login.html')
@@ -24,28 +25,30 @@ def login():
         email = request.form.get('email')
         password = request.form.get('password')
 
-        user1 = User.query.filter_by(email = email).first()
-        
+        user1 = User.query.filter_by(email=email).first()
+
         if not user1:
             flash('User not found')
             return redirect(url_for('register'))
-        if user1.password != password:
+        # verify hashed password
+        if not check_password_hash(user1.password, password):
             flash('Incorrect password')
             return render_template('login.html')
-        
+
         session['user_email'] = user1.email
         session['role'] = user1.role
         session['name'] = user1.name
-        
+
         return redirect(url_for('home'))
+
 
 @app.route('/logout')
 def logout():
     session.clear()
-    return redirect(url_for('login'))  
+    return redirect(url_for('login'))
 
 
-@app.route('/register',methods = ['GET','POST'])
+@app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'GET':
         return render_template('register.html')
@@ -55,51 +58,55 @@ def register():
         password = request.form.get('password')
         confirm_pass = request.form.get('confirm_password')
         qualification = request.form.get('qualification')
-        
+
         if password != confirm_pass:
             flash('Passwords do not match')
             return render_template('register.html')
-        
-        if User.query.filter_by(email = email).first():
+
+        if User.query.filter_by(email=email).first():
             flash('User already exists')
             return render_template('register.html')
 
         user = User(
-            name = name,
-            email = email,
-            password = password,
-            qualification = qualification,
-            role = "user"
-            )
+            name=name,
+            email=email,
+            password=generate_password_hash(password),
+            qualification=qualification,
+            role="user"
+        )
         db.session.add(user)
         db.session.commit()
 
-        flash('Registration Successfull!, Login in to continue')
+        flash('Registration Successful!, Login in to continue')
         return redirect(url_for('login'))
-    
+
+
 @app.route('/manage_users')
 def manage_users():
     if not session.get('user_email') or session.get('role') != 'admin':
         flash('Unauthorized Access')
         return redirect(url_for('home'))
-    users = User.query.filter_by(role = "user").all()
-    return render_template('manage_users.html',users = users)
+    users = User.query.filter_by(role="user").all()
+    return render_template('manage_users.html', users=users)
+
 
 @app.route('/delete_user/<int:id>')
 def delete_user(id):
     if not session.get('user_email') or session.get('role') != 'admin':
         flash('Unauthorized Access')
         return redirect(url_for('home'))
-    
-    user = User.query.filter_by(id = id).first()
+
+    user = User.query.filter_by(id=id).first()
     if not user:
         flash('User not found')
         return redirect(url_for('manage_users'))
     db.session.delete(user)
     db.session.commit()
-        
+
     flash('User deleted Successfully! ')
     return redirect(url_for('manage_users'))
+
+
 @app.route('/manage_subject')
 def manage_subject():
     if not session.get('user_email') or session.get('role') != 'admin':
@@ -148,7 +155,7 @@ def quiz_analysis(quiz_id):
     stats['max'] = max(scores)
 
     # Histogram
-    fig = plt.figure(figsize=(6,4))
+    fig = plt.figure(figsize=(6, 4))
     bins = min(10, max(1, len(set(scores))))
     plt.hist(scores, bins=bins, color='skyblue', edgecolor='black')
     plt.xlabel('Score')
@@ -186,7 +193,7 @@ def my_analysis():
     times = [a.time for a in attempts]
     scores = [a.score for a in attempts]
 
-    fig = plt.figure(figsize=(6,4))
+    fig = plt.figure(figsize=(6, 4))
     plt.plot_date(times, scores, '-o', color='green')
     plt.xlabel('Time')
     plt.ylabel('Score')
@@ -223,7 +230,7 @@ def my_analysis_quiz(quiz_id):
     times = [a.time for a in attempts]
     scores = [a.score for a in attempts]
 
-    fig = plt.figure(figsize=(6,4))
+    fig = plt.figure(figsize=(6, 4))
     plt.plot_date(times, scores, '-o', color='orange')
     plt.xlabel('Time')
     plt.ylabel('Score')
