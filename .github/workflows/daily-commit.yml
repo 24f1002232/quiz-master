@@ -1,4 +1,4 @@
-name: Daily Automated Commit
+name: Daily Automated Commit - 24f1002232@ds.study.iitm.ac.in
 
 on:
   schedule:
@@ -15,7 +15,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 24f1002232@ds.study.iitm.ac.in - Update daily log
+      - name: Run by 24f1002232@ds.study.iitm.ac.in - Update daily log
         run: |
           mkdir -p logs
           echo "Daily update: $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> logs/daily-log.txt
